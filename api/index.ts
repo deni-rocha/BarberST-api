@@ -1,21 +1,19 @@
-import express, { Request, Response, Router } from "express"
-import * as dotenv from "dotenv"
+import "dotenv/config"
+import express from "express"
+import router from "./routes/index"
+import verificarToken from "./middlewares/verificarToken/index"
+import loaders from "./loaders/index"
 
 // configurações
 const app = express()
-const router = Router()
-dotenv.config()
-
 app.use(express.json())
-app.use(router)
+
+// conectar banco de dados
+loaders.startDB()
 
 // rotas
-router.get("/", (_req: Request, res: Response) => {
-  res.send({
-    mensagem: "template node com typescript",
-  })
-})
+app.use("/api", verificarToken, router)
 
 // servidor
 const porta = process.env.PORT || 3030
-app.listen(porta, () => console.log("http://localhost:8080"))
+app.listen(porta, () => console.log(`http://localhost:${porta}`))
